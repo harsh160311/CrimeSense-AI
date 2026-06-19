@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import math
 import random
+import time
 from typing import List, Dict, Any
 from models import CrimeIncident
 import numpy as np
@@ -9,7 +10,21 @@ from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
 
 
-MAX_ANALYTICS_RECORDS = 10000
+MAX_ANALYTICS_RECORDS = 5000
+
+_cache: dict = {}
+_cache_ttl: int = 5
+
+def _cached(key: str, fn, *args, **kwargs):
+    now = time.time()
+    if key in _cache and now - _cache[key]["time"] < _cache_ttl:
+        return _cache[key]["data"]
+    result = fn(*args, **kwargs)
+    _cache[key] = {"data": result, "time": now}
+    return result
+
+def clear_cache():
+    _cache.clear()
 
 FAKE_LOCATIONS = [
     "Sector 14 Market", "Sector 18 Plaza", "Old Town", "Industrial Area",
@@ -26,14 +41,20 @@ class CrimeAnalysisEngine:
     def total_incident_count(self) -> int:
         return self.db.query(CrimeIncident).count()
 
-    def get_recent_incidents(self, days: int = None, limit: int = MAX_ANALYTICS_RECORDS) -> List[CrimeIncident]:
+    def get_recent_incidents(self, days: int = 365, limit: int = MAX_ANALYTICS_RECORDS) -> List[CrimeIncident]:
+        cache_key = f"incidents_{days}_{limit}"
+        cached = _cache.get(cache_key)
+        if cached and time.time() - cached["time"] < _cache_ttl:
+            return cached["data"]
         q = self.db.query(CrimeIncident).order_by(CrimeIncident.date_time.desc())
         if days is not None:
             cutoff = datetime.now() - timedelta(days=days)
             q = q.filter(CrimeIncident.date_time >= cutoff)
         if limit:
             q = q.limit(limit)
-        return q.all()
+        result = q.all()
+        _cache[cache_key] = {"data": result, "time": time.time()}
+        return result
 
     def get_summary_stats(self) -> Dict[str, Any]:
         total = self.total_incident_count()
