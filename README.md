@@ -550,7 +550,7 @@ CrimeSense-AI/
   <br/><br/>
   <sub>Built for law enforcement and public safety analytics</sub>
   <br/>
-  <sub>Made with ❤️ by <a href="https://github.com/Jyotibala-cyber">Jyotibala</a></sub>
+  
 </p>
 
 <br/>
