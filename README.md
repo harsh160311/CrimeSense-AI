@@ -337,6 +337,17 @@ Copyright © 2025 CrimeSense AI — Built for law enforcement and public safety 
 <div align="center">
 
 Made with ❤️ by [Jyotibala](https://github.com/Jyotibala-cyber) & [Harsh](https://github.com/harsh160311)
+=======
+<p align="center">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
+  <br/><br/>
+  Copyright &copy; 2025 CrimeSense AI
+  <br/><br/>
+  <sub>Built for law enforcement and public safety analytics</sub>
+  <br/>
+  
+</p>
+
 
 <br/>
 
